@@ -1,69 +1,87 @@
 # Incident Simulation and RCA Report
 
-This document shows th failure scenarios performed for the SRE machine test. Three scenarios were tested:
+This document describes the failure scenarios simulated as part of the **SRE Machine Test**. The following three incident scenarios were tested:
 
-1. Pod CrashLoopBackOff
-2. High CPU 
-3. Excess logging / log flood
+1. Pod `CrashLoopBackOff`
+2. High CPU Usage
+3. Excessive Logging / Log Flood
 
-The tests were performed in the `sre-app` namespace on the k3s cluster.
+All tests were performed in the `sre-app` namespace on the **K3s cluster**.
 
 ---
 
-#Incident 1: Pod CrashLoopBackOff
+# Incident 1: Pod CrashLoopBackOff
 
-##Objective
+## Objective
 
-Simulate a corrupted application startup configuration that causes a container to repeatedly fail and enter `CrashLoopBackOff`.
+Simulate a corrupted application startup configuration that causes a container to repeatedly fail and enter the `CrashLoopBackOff` state.
 
-##Reproduction
+## Reproduction
 
 The test manifest is available at:
 
-`tests/crashloop.yaml`
+```text
+tests/crashloop.yaml
+```
 
-Apply the failure:
+Apply the failure scenario:
 
 ```bash
 kubectl apply -f tests/crashloop.yaml
 kubectl get pod crashloop-test -n sre-app -w
+```
 
+---
 
-# Incident 2: High CPU
+# Incident 2: High CPU Usage
 
 ## Objective
 
-Generate morevCPU load and verify that Kubernetes and the monitoring stack can detect abnormal resource consumption.
+Generate high CPU load and verify that Kubernetes and the monitoring stack can detect abnormal resource consumption.
+
 ## Reproduction
 
 The test manifest is available at:
 
+```text
 tests/cpu-stress.yaml
+```
 
-Apply the failure:
+Apply the failure scenario:
 
 ```bash
 kubectl apply -f tests/cpu-stress.yaml
 kubectl get pods -n sre-app
+```
 
-# Incident 2: Log flood
+---
+
+# Incident 3: Log Flood
 
 ## Objective
 
-Generate a controlled burst of application logs and validate log collection through Promtail, Loki and Grafana.
+Generate a controlled burst of application logs and validate that the logs are successfully collected and visualized through **Promtail, Loki, and Grafana**.
+
 ## Reproduction
 
-The test manifest is available at:
+The test script is available at:
 
+```text
 tests/log-flood.sh
+```
 
-to run:
+Run the script:
 
 ```bash
 ./tests/log-flood.sh
+```
 
-Logs were viewed in Grafana using the Loki datasource with
+## Log Verification
 
-LogQl
+The generated logs were verified in **Grafana** using the **Loki** data source.
+
+The following LogQL query was used to filter the application health-check logs:
+
+```logql
 {namespace="sre-app", container="sre-test-app"} |= "GET /health"
-
+```

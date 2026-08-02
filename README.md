@@ -1,6 +1,6 @@
 # SRE Machine Test
 
-This project demonstrates the deployment and operation of a containerized microservice on a lightweight Kubernetes (k3s) environment with CI/CD, monitoring, centralized logging, alerting and controlled failure simulations.
+In this project, I deployed a containerized microservice application on a (k3s) Kubernetes cluster and set up CI/CD Workflow using Github Actions, monitoring, centralized logging, alerts, and failure scenario testing.
 
 ## Architecture
 
@@ -43,19 +43,19 @@ This project demonstrates the deployment and operation of a containerized micros
 
 ## Technology Stack
 
-- Linux / AWS EC2
+- Ubuntu AWS EC2 Instance
 - Docker
 - k3s Kubernetes
 - Helm
 - Traefik Ingress
-- GitHub Actions
+- GitHub Actions - workflow
 - Docker Hub
 - Prometheus
 - Grafana
 - Alertmanager
 - Loki
 - Promtail
-- Python / Gunicorn
+- Python - Gunicorn
 
 ## Application
 
@@ -138,7 +138,7 @@ The workflow:
 
 1. Checks out the source code.
 2. Builds the Docker image.
-3. Tags the image using the Git commit SHA.
+3. Tags the image using the Git commit.
 4. Authenticates to Docker Hub using GitHub Secrets.
 5. Pushes the image to Docker Hub.
 6. Connects to the deployment server.
@@ -151,7 +151,7 @@ CI/CD configuration is located at:
 .github/workflows/deploy.yml
 ```
 
-Credentials required by the workflow are stored using GitHub Actions Secrets and are not committed to the repository.
+Credentials for the workflows are stored using GitHub Actions Secrets
 
 ## Monitoring
 
@@ -182,7 +182,7 @@ sre_app_requests_total
 
 ### Grafana
 
-Two Grafana dashboards were created to provide application and Kubernetes monitoring visibility.
+created 2 Grafana dashboards to provide application and Kubernetes monitoring visibility
 
 Grafana uses Prometheus as the metrics datasource.
 
@@ -190,7 +190,7 @@ Dashboard JSON files are stored with the monitoring configuration in this reposi
 
 ## Alerting
 
-Prometheus alerting/recording rules include:
+Prometheus alerting rules include:
 
 - `SREAppDown`
 - `SREAppPodRestarting`
@@ -242,11 +242,11 @@ Application logs can be queried in Grafana using the Loki datasource:
 
 ## Failure Simulations
 
-Three controlled failure scenarios were performed.
+Three failure scenarios were performed.
 
 ### 1. Pod CrashLoopBackOff
 
-A container with intentionally invalid startup configuration was created:
+Created container with invalid startup configuration:
 
 ```bash
 kubectl apply -f tests/crashloop.yaml
@@ -268,7 +268,7 @@ kubectl delete pod crashloop-test -n sre-app
 
 ### 2. High CPU
 
-A controlled CPU-intensive workload was deployed:
+A controlled CPU workload was deployed:
 
 ```bash
 kubectl apply -f tests/cpu-stress.yaml
@@ -283,9 +283,9 @@ Cleanup:
 kubectl delete deployment cpu-stress -n sre-app
 ```
 
-### 3. Excess Logging / Log Flood
+### 3. Excess Logging - flood
 
-Generate a controlled burst of application requests:
+Generate a controlled application requests:
 
 ```bash
 ./tests/log-flood.sh
@@ -305,7 +305,7 @@ docs/incidents.md
 
 ## Operations Runbook
 
-Common operational procedures including pod troubleshooting, resource investigation, restart, scaling and rollback are documented in:
+Common operational procedures including pod troubleshooting, resource investigation, restart, scaling are documented in:
 
 ```text
 docs/runbook.md
@@ -323,15 +323,13 @@ Important principles include:
 
 - No credentials committed to Git.
 - CI/CD credentials stored in GitHub Secrets.
-- Runtime secrets stored using Kubernetes Secrets.
 - Resource limits configured for workloads.
 - Least-privilege RBAC recommended for production.
-- TLS and NetworkPolicies recommended for production.
 - Monitoring services should not be publicly exposed without protection.
 
 ## Setup Summary
 
-A high-level setup sequence is:
+setup sequence is:
 
 1. Provision Linux VM.
 2. Install Docker, kubectl, Helm and k3s.
@@ -345,7 +343,7 @@ A high-level setup sequence is:
 10. Import/use the Grafana dashboards.
 11. Verify application metrics and centralized logs.
 
-## Teardown
+## Shutdown, Resource Removal
 
 Remove the application:
 
@@ -394,14 +392,14 @@ Security documentation:
 docs/security.md
 ```
 
-## Assumptions and Design Decisions
+## Design Considerations
 
 - A single Linux EC2 VM is used for the lightweight k3s environment.
 - Traefik bundled with k3s is used as the ingress controller.
 - The application uses two replicas during normal operation.
 - Local-path storage is used for persistent monitoring/logging data in this assessment environment.
 - Failure simulations are controlled test workloads and are removed after evidence is collected.
-- The environment is designed for assessment/demo purposes. Production deployment would require additional high availability, TLS, RBAC, network policies, backup and security controls.
+- The environment is designed for machine test only. Production deployment will require additional high availability, TLS, RBAC, network policies, backup and security controls.
 
 ## Result
 
@@ -415,6 +413,6 @@ The implementation demonstrates:
 - Grafana dashboards
 - Prometheus alerting
 - Centralized logging using Loki and Promtail
-- Controlled SRE failure simulations
+- 3 Controlled failure scenarios
 - Incident investigation and RCA
 - Operational recovery procedures

@@ -1,0 +1,10 @@
+.git
+.github
+docs
+helm
+monitoring
+tests
+README.md
+__pycache__
+*.pyc
+.env

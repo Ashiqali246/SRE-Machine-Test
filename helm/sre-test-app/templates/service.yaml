@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sre-test-app
+  labels:
+    app: sre-test-app
+
+spec:
+  type: {{ .Values.service.type }}
+
+  selector:
+    app: sre-test-app
+
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}

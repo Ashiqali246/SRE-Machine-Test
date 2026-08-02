@@ -401,6 +401,13 @@ docs/security.md
 - Failure simulations are controlled test workloads and are removed after evidence is collected.
 - The environment is designed for machine test only. Production deployment will require additional high availability, TLS, RBAC, network policies, backup and security controls.
 
+## Screenshots 
+Screenshots and the evidences, references are included in :
+
+```text
+docs/screenshots.md
+```
+
 ## Result
 
 The implementation demonstrates:

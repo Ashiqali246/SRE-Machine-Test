@@ -405,7 +405,7 @@ docs/security.md
 Screenshots and the evidences, references are included in :
 
 ```text
-docs/screenshots.md
+docs/screenshots
 ```
 
 ## Result

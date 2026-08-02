@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crashloop-test
+  namespace: sre-app
+  labels:
+    app: crashloop-test
+spec:
+  containers:
+    - name: crashloop-test
+      image: busybox:1.36
+      command:
+        - /bin/sh
+        - -c
+        - |
+          echo "ERROR: Application startup configuration is corrupted"
+          echo "ERROR: Required configuration APP_CONFIG is invalid"
+          exit 1
+  restartPolicy: Always

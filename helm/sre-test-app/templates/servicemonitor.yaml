@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+
+metadata:
+  name: sre-test-app
+  labels:
+    app: sre-test-app
+
+spec:
+  namespaceSelector:
+    matchNames:
+      - sre-app
+
+  selector:
+    matchLabels:
+      app: sre-test-app
+
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s

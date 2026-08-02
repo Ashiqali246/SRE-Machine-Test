@@ -1,0 +1,37 @@
+grafana:
+  enabled: true
+
+  adminPassword: "CHANGE_ME_AT_INSTALL"
+
+  service:
+    type: ClusterIP
+
+  persistence:
+    enabled: true
+    size: 2Gi
+
+prometheus:
+  enabled: true
+
+  prometheusSpec:
+    retention: 7d
+
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 5Gi
+
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+alertmanager:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true

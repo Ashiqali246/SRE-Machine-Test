@@ -10,13 +10,13 @@ The tests were performed in the `sre-app` namespace on the k3s cluster.
 
 ---
 
-# Incident 1: Pod CrashLoopBackOff
+#Incident 1: Pod CrashLoopBackOff
 
-## Objective
+##Objective
 
 Simulate a corrupted application startup configuration that causes a container to repeatedly fail and enter `CrashLoopBackOff`.
 
-## Reproduction
+##Reproduction
 
 The test manifest is available at:
 

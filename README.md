@@ -423,3 +423,8 @@ The implementation demonstrates:
 - 3 Controlled failure scenarios
 - Incident investigation and RCA
 - Operational recovery procedures
+
+## Links
+Grafana Dashboard  Access
+
+  - Link : http://44.212.13.126:3000/public-dashboards/4a39ce77cd554f33aa61591df63b434a

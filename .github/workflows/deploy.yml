@@ -1,0 +1,72 @@
+name: SRE CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/sre-test-app:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/sre-test-app:latest
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy to k3s using Helm
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          ssh -i ~/.ssh/deploy_key "${EC2_USER}@${EC2_HOST}" \
+            "cd /home/ubuntu/sre-test/helm/sre-test-app && \
+             export KUBECONFIG=/etc/rancher/k3s/k3s.yaml && \
+             helm upgrade --install sre-test-app . \
+             --namespace sre-app \
+             --set image.tag=${IMAGE_TAG} \
+             --set-string appSecret=${APP_SECRET} \
+             --wait \
+             --timeout 5m"
+
+      - name: Verify Kubernetes deployment
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key "${EC2_USER}@${EC2_HOST}" \
+            "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml && \
+             kubectl rollout status deployment/sre-test-app \
+             -n sre-app \
+             --timeout=120s && \
+             kubectl get pods -n sre-app"
